@@ -3,6 +3,7 @@
 #include <cstring>
 #include <math.h>
 #include <vector>
+#include <tuple>
 
 #include "crc.h"
 #include "paritycheck.h"
@@ -14,37 +15,39 @@ using namespace std;
 
 char* error_data(char* data, char* error)
 {
-    int datalen = strlen(data);
-    int exorlen = (strlen(data)<strlen(error))? strlen(data): strlen(error);
-    char* result = new char[datalen + 1];
-    for(int i = 0; i < exorlen; i++)
+    int dataLen = strlen(data);
+    int exorLen = (strlen(data)<strlen(error))? strlen(data): strlen(error);
+    //cout<<dataLen<<endl<<strlen(error)<<exorLen<<endl;
+    char* result = new char[dataLen + 1];
+    for(int i = 0; i < exorLen; i++)
     {
         result[i] = exor(data[i],error[i]);
     }
     if(strlen(data)>strlen(error)){
-        for(int i=exorlen; i <datalen; i++)
+        for(int i=exorLen; i <dataLen; i++)
         {
             result[i] = exor(data[i],'0');
         }
     }
+    result[dataLen]='\0';
     return result;
 }
 
 string error_data(string data, string error)
 {
-    int datalen = data.length();
+    int dataLen = data.length();
     int errorlen = error.length();
-    int exorlen = (datalen<errorlen)? datalen: errorlen;
+    int exorLen = (dataLen<errorlen)? dataLen: errorlen;
     string result;
-    for(int i = 0; i < exorlen; i++)
+    for(int i = 0; i < exorLen; i++)
     {
         if(data[i]==error[i])
             result.append("0");
         else
             result.append("1");
     }
-    if(datalen>errorlen){
-        result.append(data.substr(errorlen,datalen-errorlen));
+    if(dataLen>errorlen){
+        result.append(data.substr(errorlen,dataLen-errorlen));
     }
     return result;
 }
@@ -79,8 +82,11 @@ int main()
         char error[256];
         char datacrc8[256], datacrc16[256];
         strncpy(datacrc8, part1.c_str(), sizeof(datacrc8) - 1);
+        datacrc8[sizeof(datacrc8) - 1] = '\0';
         strncpy(datacrc16, part1.c_str(), sizeof(datacrc16) - 1);
+        datacrc16[sizeof(datacrc16) - 1] = '\0';
         strncpy(error, part2.c_str(), sizeof(error) - 1);
+        error[sizeof(error) - 1] = '\0';
 
         //use the given crc generating bits
         char crc_g8[20]="100110001";
@@ -90,7 +96,7 @@ int main()
         char* errorDatacrc8 = error_data(datacrc8,error);//introduce error
         //cout << "DATA:" << errorDatacrc8 << endl;
         bool crc8result = crc_decode(errorDatacrc8,crc8,crc_g8);//check the received data using CRC8
-        //cout << "Data:" << data << endl;
+        //cout << "Data:" << datacrc8 << endl;
 
         //same for CRC16
         char* crc16 = crc_encode(datacrc16,crc_g16);
@@ -102,15 +108,15 @@ int main()
         //return the data with parity bits inserted, the 8-bit column parity and the 9-bit row parity
         auto [newdataParity, originalcolParity, originalrowParity] = encodeData(dataParity);
         //cout << "Data: " << dataParity << endl;
-        string errordataParity = error_data(newdataParity,errorstring);//introduce error
+        string errorDataParity = error_data(newdataParity,errorstring);//introduce error
         //cout << "Error Data: " << dataParity << endl;
 
         //separate the codeword to 64-bit data, the 8-bit column parity and the 9-bit row parity
-        auto [receivedtext, colParity, rowParity] = decodeData(errordataParity);
-        bool parityresult = paritycheck(receivedtext,colParity,rowParity);//check the received data
-        
+        auto [receivedText, colParity, rowParity] = decodeData(errorDataParity);
+        bool parityResult = parityCheck(receivedText,colParity,rowParity);//check the received data
+
 //        cout << "Result:" << parityresult;
-//        cout << "Original Data: " << receivedtext << endl;
+//        cout << "Original Data: " << receivedText << endl;
 //        cout << "Column Parity: " << colParity << endl;
 //        cout << "Row Parity: " << rowParity << endl;
 
@@ -121,19 +127,19 @@ int main()
         //cout<<"Checksum:"<<csum<<endl;
         string errordataChecksum = error_data(dataChecksum,errorstring);
         //cout<<errordataChecksum<<endl;
-        bool checksumresult = checksum_decode(errordataChecksum);//check the received data
-        //printchecksumresult(csum,checksumresult);
+        bool checksumresult = checksumDecode(errordataChecksum);//check the received data
+        //printChecksumResult(csum,checksumresult);
         //cout<<dataChecksum<<endl;
 
 
         //print the results
         cout << "==========================" << endl;
         cout << "Data:" << part1 << endl;
-        cout << "Error:" << part2 << endl;
-        printcrcresult(crc8, crc8result);
-        printcrcresult(crc16, crc16result);
-        printparityresult(parityresult,originalcolParity,originalrowParity);
-        printchecksumresult(csum,checksumresult);
+        cout << "Error:" << error << endl;
+        printCrcResult(crc8, crc8result);
+        printCrcResult(crc16, crc16result);
+        printParityResult(parityResult,originalcolParity,originalrowParity);
+        printChecksumResult(csum, checksumresult);
 
         delete[] crc8;
         delete[] crc16;

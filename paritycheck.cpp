@@ -23,7 +23,7 @@ tuple<string, string, string> encodeData(const string& data) {
     }
 
     // Calculate the row parity for each 8-bit block
-    string rowParities="";
+    string rowParity="";
     for (int i = 0; i < 8; i++) {
         int bitCount = 0;
         for (int j = 0; j < 8; ++j) {
@@ -31,11 +31,11 @@ tuple<string, string, string> encodeData(const string& data) {
         }
         encodedData.append(blocks[i]);
         if(bitCount % 2) {
-            rowParities.append("1");
+            rowParity.append("1");
             encodedData.append("1");
         }
         else {
-            rowParities.append("0");
+            rowParity.append("0");
             encodedData.append("0");
         }
 
@@ -48,17 +48,17 @@ tuple<string, string, string> encodeData(const string& data) {
     }
     encodedData.append(columnParity);
     if(columnParityBitCount % 2) {
-        rowParities.append("1");
+        rowParity.append("1");
         encodedData.append("1");
     }
     else {
-        rowParities.append("0");
+        rowParity.append("0");
         encodedData.append("0");
     }
 
-    //cout<<rowParities<<endl;
+    //cout<<rowParity<<endl;
 
-    return {encodedData,columnParity,rowParities};
+    return {encodedData,columnParity,rowParity};
 }
 
 tuple<string, string, string> decodeData(const string& encodedData) {
@@ -68,17 +68,17 @@ tuple<string, string, string> decodeData(const string& encodedData) {
 
     // Extracting original data and row parities
     string originalData = "";
-    string rowParities = "";
+    string rowParity = "";
     for (int i = 0; i < 8; ++i) {
         originalData += encodedData.substr(i * 9, 8);
-        rowParities += encodedData[i * 9 + 8];
+        rowParity += encodedData[i * 9 + 8];
     }
-    rowParities += encodedData[80];
+    rowParity += encodedData[80];
 
     // Extracting column parity
     string columnParity = encodedData.substr(72, 8);
 
-    return {originalData, columnParity, rowParities};
+    return {originalData, columnParity, rowParity};
 }
 
 pair<string, string> getParities(const string& data) {
@@ -105,17 +105,17 @@ pair<string, string> getParities(const string& data) {
     }
 
     // Calculate the row parity for each 8-bit block
-    string rowParities="";
+    string rowParity="";
     for (int i = 0; i < 8; i++) {
         int bitCount = 0;
         for (int j = 0; j < 8; ++j) {
             if (blocks[i][j] == '1') bitCount++;
         }
         if(bitCount % 2) {
-            rowParities.append("1");
+            rowParity.append("1");
         }
         else {
-            rowParities.append("0");
+            rowParity.append("0");
         }
     }
 
@@ -125,27 +125,27 @@ pair<string, string> getParities(const string& data) {
             columnParityBitCount++;
     }
     if(columnParityBitCount % 2) {
-        rowParities.append("1");
+        rowParity.append("1");
     }
     else {
-        rowParities.append("0");
+        rowParity.append("0");
     }
-    return {columnParity, rowParities};
+    return {columnParity, rowParity};
 }
 
-bool paritycheck(string data, string col, string row)
+bool parityCheck(string data, string col, string row)
 {
-    auto [colrec, rowrec] = getParities(data);
-    //cout<<col<<"\t"<<colrec<<endl;
-    //cout<<row<<"\t"<<rowrec<<endl;
-    if(col==colrec && row==rowrec){
+    auto [colRec, rowRec] = getParities(data);
+    //cout<<col<<"\t"<<colRec<<endl;
+    //cout<<row<<"\t"<<rowRec<<endl;
+    if(col==colRec && row==rowRec){
         return true;
     }
     else
         return false;
 }
 
-void printparityresult(bool result,string colParity,string rowParity){
+void printParityResult(bool result,string colParity,string rowParity){
     if(result){
         cout<<"2D Parity"<<endl;
         cout<<"Col: "<<colParity<<" Row: "<<rowParity<<"\t\tResult: Pass"<<endl;}

@@ -26,10 +26,10 @@ string decimalToBinary(int decimal) {
 
 string computeChecksum(const string& data) {
     vector<string> chunks;
-    int datalen = data.length();
+    int dataLen = data.length();
 
     // Divide data into 8 chunks of 8 bits each
-    for (int i = 0; i < datalen; i += 8) {
+    for (int i = 0; i < dataLen; i += 8) {
         chunks.push_back(data.substr(i, 8));
     }
 
@@ -55,20 +55,20 @@ string computeChecksum(const string& data) {
     return binarySum;
 }
 
-bool checksum_decode(string data){
-    int datalen = data.length();
+bool checksumDecode(string data){
+    int dataLen = data.length();
 
-    string data1 = data.substr(0, datalen-8);
-    string data2 = data.substr(datalen-8, datalen);
-    string newchecksum = computeChecksum(data1);
-    if(newchecksum == data2)
+    string data1 = data.substr(0, dataLen - 8);
+    string data2 = data.substr(dataLen - 8, dataLen);
+    string newChecksum = computeChecksum(data1);
+    if(newChecksum == data2)
         return true;
     else
         return false;
 }
 
 
-void printchecksumresult(string checksum, bool result){
+void printChecksumResult(string checksum, bool result){
     cout<<"Checksum"<<endl;
     if(result)
         cout<<"Checksum: "<<checksum<<"\t\t\tResult: Pass"<<endl;

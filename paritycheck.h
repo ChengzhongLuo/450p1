@@ -11,14 +11,16 @@
 #include <math.h>
 #include <fstream>
 #include <vector>
+#include <tuple>
+
 
 using namespace std;
 
 tuple<string, string, string> encodeData(const string& data) ;
 tuple<string, string, string> decodeData(const string& encodedData);
 pair<string, string> getParities(const string& data);
-bool paritycheck(string data, string col, string row);
-void printparityresult(bool result,string colParity,string rowParity);
+bool parityCheck(string data, string col, string row);
+void printParityResult(bool result,string colParity,string rowParity);
 
 
 #endif //INC_450P1_PARITYCHECK_H

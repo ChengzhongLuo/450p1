@@ -1,28 +1,23 @@
 # include "crc.h"
 
-char exor(char a,char b)                                      // perform exor operation
+char exor(char a,char b)// perform exor operation
 {
     if(a==b)
         return '0';
     else
         return '1';
 }
+
 bool crc_decode(char data[], char crc[], char key[]) {
-    int datalen = strlen(data);
+    int dataLen = strlen(data);
     int crcGenLen = strlen(key);
-//    char* datar = append(data, crc);
-//    int datarlen = datalen + crcGenLen - 1;
-//    cout<<"rdatalen: "<<datarlen<<endl;
-//    for (int i= 0; i < datarlen; i++)
-//        cout<<datar[i];
-//    cout<<endl;
 
     char temp[128], rem[128];
 
     for (int i = 0; i < crcGenLen; i++)
-        rem[i] = data[i];                    //considering n bits of datar for each step of binary division/EXOR
+        rem[i] = data[i];
 
-    for (int j = crcGenLen; j <= datalen; j++) {
+    for (int j = crcGenLen; j <= dataLen; j++) {
         for (int i = 0; i < crcGenLen; i++)
             temp[i] = rem[i];                // remainder of previous step is divident of current step
 
@@ -36,14 +31,14 @@ bool crc_decode(char data[], char crc[], char key[]) {
                 rem[i] = exor(temp[i + 1], key[i + 1]);
 
         }
-        if (j != datalen)
+        if (j != dataLen)
             rem[crcGenLen - 1] = data[j];        //appending next bit of data to remainder obtain by division
         else
             rem[crcGenLen - 1] = '\0';
     }
-//    for (int i= 0; i < crcGenLen - 1; i++)
-//        cout<<rem[i];
-//    cout<<endl;
+    for (int i= 0; i < crcGenLen - 1; i++)
+        cout<<rem[i];
+    cout<<endl;
     for (int i = 0; i < crcGenLen - 1; i++) {
         if (rem[i] != '0') {
             return false; // CRC verification failed
@@ -54,14 +49,14 @@ bool crc_decode(char data[], char crc[], char key[]) {
 
 char* crc_encode(char data[], char key[])
 {
-    int datalen = strlen(data);
+    int dataLen = strlen(data);
     int crcGenLen = strlen(key);
 
     for(int i=0;i<crcGenLen-1;i++)                //appending n-1 zeroes to data
-        data[datalen+i]='0';
-    data[datalen+crcGenLen-1]='\0';
+        data[dataLen+i]='0';
+    data[dataLen+crcGenLen-1]='\0';
 
-    int codelen = datalen+crcGenLen-1;                //lenght of appended data word
+    int codelen = dataLen+crcGenLen-1;                //lenght of appended data word
 
     char* rem = new char[128];
     char temp[128];
@@ -92,7 +87,7 @@ char* crc_encode(char data[], char key[])
     }
 
     for(int i=0;i<crcGenLen-1;i++)
-        data[datalen+i]=rem[i];                //replace n-1 zeros with n-1 bit CRC
+        data[dataLen+i]=rem[i];                //replace n-1 zeros with n-1 bit CRC
     data[codelen]='\0';
 //    for (int i= 0; i < codelen; i++)
 //        cout<<data[i];
@@ -100,7 +95,7 @@ char* crc_encode(char data[], char key[])
     return rem;
 }
 
-void printcrcresult(char* crc, bool result){
+void printCrcResult(char* crc, bool result){
     int crcGenLen = strlen(crc);
     //cout<<"crcCount: "<<crcGenLen<<endl;
     if(crcGenLen==8) {

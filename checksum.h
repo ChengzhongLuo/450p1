@@ -16,9 +16,9 @@ using namespace std;
 
 int binaryToDecimal(const string& bin);
 string decimalToBinary(int decimal);
-bool checksum_decode(string data);
+bool checksumDecode(string data);
 string computeChecksum(const string& data);
-void printchecksumresult(string checksum, bool result);
+void printChecksumResult(string checksum, bool result);
 
 
 #endif //INC_450P1_CHECKSUM_H
