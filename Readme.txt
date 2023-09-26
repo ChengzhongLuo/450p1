@@ -1,0 +1,8 @@
+1) Chengzhong Luo
+2) 5963319108
+3) ubuntu 20.04.5
+4) I write a program that simulate data send on a datalink and use error detection scheme to check the message. Basically it takes in data message and an error code. First, it encodes the data using one of the error detection scheme (CRC, Checksum, and Parity Check). Then, it uses error code to generated a codeword simulating the corrupted code on the receiving end. Lastly, the receiving end check the codeword using corresponding error detection scheme to check if there is error in the message.
+5) For each error detection scheme (CRC, Checksum, and Parity Check), I write a header file and source file. They have all the functions, included libraries related to the scheme in them. Generally, they have the following functions: 1, generate the error detection bits; 2, check if the codeword is correct; 3, print out the result. I also add some help different functions for some of the error detection scheme, like binaryToDecimal and decimalToBinary for Checksum and exor for CRC.
+In the main function, I read the data file line by line to get the message and error. Then use the functions in header file of each error detection scheme to 1, generate the error detection bits; 2, check if the codeword is correct; 3, print out the result. And between 1, and 2, I also exor the encoded message with error to get codeword.
+6) For CRC, it is scalable. For the rest, the message has to be 64-bit.
+7) No. For binary division, I looked at different ways to do it online, but I write the code myself. 
