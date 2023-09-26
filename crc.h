@@ -15,6 +15,7 @@
 using namespace std;
 
 char exor(char a,char b);
+char* binaryDivision(char dividend[], char divisor[]);
 bool crc_decode(char data[], char crc[], char key[]);
 char* crc_encode(char data[], char key[]);
 void printCrcResult(char* crc, bool result);

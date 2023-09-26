@@ -93,6 +93,7 @@ int main()
         char crc_g16[20]="10001000000100001";
 
         char* crc8 = crc_encode(datacrc8,crc_g8);//return is 8-bit CRC, datacrc8 will have crc8 at the end
+        //cout<<"CRC: "<<crc8<<endl;
         char* errorDatacrc8 = error_data(datacrc8,error);//introduce error
         //cout << "DATA:" << errorDatacrc8 << endl;
         bool crc8result = crc_decode(errorDatacrc8,crc8,crc_g8);//check the received data using CRC8

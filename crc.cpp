@@ -8,39 +8,44 @@ char exor(char a,char b)// perform exor operation
         return '1';
 }
 
+char* binaryDivision(char dividend[], char divisor[]){
+    int dividendLength = strlen(dividend);//length of dividend
+    int divisorLength = strlen(divisor);//length of divisor
+    char* remainder = new char[64];
+    char* temp = new char[64];//two char array for recording the remainder
+    for(int i=0;i<divisorLength;i++){
+        remainder[i] = dividend[i]; //initiate remainder equal to the left most bits of dividend, like what we do in long division
+    }
+    for(int j=divisorLength;j<=dividendLength;j++){
+        for(int i=0;i<divisorLength;i++){
+            temp[i]=remainder[i]; //store the remainder in temp to use it later as dividend
+        }
+        if(remainder[0]=='0') {
+            for (int i = 0; i < divisorLength - 1; i++) {
+                remainder[i] = temp[i + 1];  //if first bit of remainder is 0 than shift to right by 1 bit
+            }
+        }
+        else {
+            for (int i = 0; i < divisorLength - 1; i++) {
+                remainder[i] = exor(temp[i + 1], divisor[i + 1]);  //exor the dividend with divisor
+            }
+        }
+        if (j != dividendLength)
+            remainder[divisorLength - 1] = dividend[j];  //appending next bit of dividend to remainder
+        else
+            remainder[divisorLength - 1] = '\0';
+    }
+    return remainder;
+}
+
 bool crc_decode(char data[], char crc[], char key[]) {
+
     int dataLen = strlen(data);
     int crcGenLen = strlen(key);
+    char* crcCode = binaryDivision(data,key);
 
-    char temp[128], rem[128];
-
-    for (int i = 0; i < crcGenLen; i++)
-        rem[i] = data[i];
-
-    for (int j = crcGenLen; j <= dataLen; j++) {
-        for (int i = 0; i < crcGenLen; i++)
-            temp[i] = rem[i];                // remainder of previous step is divident of current step
-
-        if (rem[0] == '0')                //if 1's bit of remainder is 0 then shift the rem by 1 bit
-        {
-            for (int i = 0; i < crcGenLen - 1; i++)
-                rem[i] = temp[i + 1];
-        } else                    //else exor the divident with generator key
-        {
-            for (int i = 0; i < crcGenLen - 1; i++)
-                rem[i] = exor(temp[i + 1], key[i + 1]);
-
-        }
-        if (j != dataLen)
-            rem[crcGenLen - 1] = data[j];        //appending next bit of data to remainder obtain by division
-        else
-            rem[crcGenLen - 1] = '\0';
-    }
-    for (int i= 0; i < crcGenLen - 1; i++)
-        cout<<rem[i];
-    cout<<endl;
     for (int i = 0; i < crcGenLen - 1; i++) {
-        if (rem[i] != '0') {
+        if (crcCode[i] != '0') {
             return false; // CRC verification failed
         }
     }
@@ -52,47 +57,22 @@ char* crc_encode(char data[], char key[])
     int dataLen = strlen(data);
     int crcGenLen = strlen(key);
 
-    for(int i=0;i<crcGenLen-1;i++)                //appending n-1 zeroes to data
+    for(int i=0;i<crcGenLen-1;i++) //appending n-1 zeroes to data
         data[dataLen+i]='0';
     data[dataLen+crcGenLen-1]='\0';
 
-    int codelen = dataLen+crcGenLen-1;                //lenght of appended data word
+    int codeLen = dataLen+crcGenLen-1; //length of appended data word
 
-    char* rem = new char[128];
-    char temp[128];
-
-    for(int i=0;i<crcGenLen;i++)
-        rem[i]=data[i];                    //considering n bits of data for each step of binary division/EXOR
-
-    for(int j=crcGenLen;j<=codelen;j++)
-    {
-        for(int i=0;i<crcGenLen;i++)
-            temp[i]=rem[i];                // remainder of previous step is divident of current step
-
-        if(rem[0]=='0')                //if 1's bit of remainder is 0 then shift the rem by 1 bit
-        {
-            for(int i=0;i<crcGenLen-1;i++)
-                rem[i]=temp[i+1];
-        }
-        else                    //else exor the divident with generator key
-        {
-            for(int i=0;i<crcGenLen-1;i++)
-                rem[i]=exor(temp[i+1],key[i+1]);
-
-        }
-        if(j!=codelen)
-            rem[crcGenLen-1]=data[j];        //appending next bit of data to remainder obtain by division
-        else
-            rem[crcGenLen-1]='\0';
-    }
+    char *crcCode;
+    crcCode = binaryDivision(data, key);
 
     for(int i=0;i<crcGenLen-1;i++)
-        data[dataLen+i]=rem[i];                //replace n-1 zeros with n-1 bit CRC
-    data[codelen]='\0';
+        data[dataLen+i]=crcCode[i]; //replace zeros with CRC
+    data[codeLen]='\0';
 //    for (int i= 0; i < codelen; i++)
 //        cout<<data[i];
 //    cout<<endl;
-    return rem;
+    return crcCode;
 }
 
 void printCrcResult(char* crc, bool result){
